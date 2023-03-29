@@ -1,5 +1,5 @@
 {
-  "name": "@tf/root",
+  "name": "@threefold/root",
   "private": true,
   "workspaces": [
     "packages/*"

@@ -1,4 +1,4 @@
-import { Client as RMBClient } from "@tf/rmb";
+import { Client as RMBClient } from "@threefold/rmb";
 
 import { BackendStorageType } from "./storage/backend";
 import BackendStorageInterface from "./storage/BackendStorageInterface";

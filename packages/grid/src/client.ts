@@ -1,5 +1,5 @@
 import * as PATH from "path";
-import { Client as RMBClient } from "@tf/rmb";
+import { Client as RMBClient } from "@threefold/rmb";
 
 import { TFClient } from "./clients/tf-grid/client";
 import { ClientOptions, GridClientConfig, NetworkEnv } from "./config";

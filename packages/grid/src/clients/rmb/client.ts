@@ -1,4 +1,4 @@
-import { Client as RMBClient } from "@tf/rmb";
+import { Client as RMBClient } from "@threefold/rmb";
 
 class RMB {
     client: RMBClient;

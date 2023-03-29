@@ -1,5 +1,5 @@
 {
-    "name": "@tf/grid",
+    "name": "@threefold/grid",
     "author": "Ahmed Hanafy",
     "version": "1.0.0",
     "license": "ISC",
@@ -11,7 +11,7 @@
     "dependencies": {
         "@jimber/pkid": "1.0.4",
         "@noble/secp256k1": "^1.7.1",
-        "@tf/rmb": "^1.0.0",
+        "@threefold/rmb": "^1.0.0",
         "algosdk": "^1.19.0",
         "appdata-path": "^1.0.0",
         "await-lock": "^2.1.0",

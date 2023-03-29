@@ -1,5 +1,5 @@
 import { default as PrivateIp } from "private-ip";
-import { Client as RMBClient } from "@tf/rmb";
+import { Client as RMBClient } from "@threefold/rmb";
 
 import { GridClient } from "../client";
 import { RMB } from "../clients";
