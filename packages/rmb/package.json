@@ -1,7 +1,10 @@
 {
   "name": "@threefold/rmb",
   "version": "1.0.0",
-  "repository": "https://github.com/threefoldtech/rmb-sdk-ts.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/threefoldtech/grid3_client_ts.git"
+},
   "author": "amiraabouhadid <amiraabouhadid@gmail.com>",
   "license": "MIT",
   "types": "dist/es6/client.d.ts",
