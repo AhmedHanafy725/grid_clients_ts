@@ -8,6 +8,9 @@
         "type": "git",
         "url": "https://github.com/threefoldtech/grid3_client_ts.git"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "dependencies": {
         "@jimber/pkid": "1.0.4",
         "@noble/secp256k1": "^1.7.1",
