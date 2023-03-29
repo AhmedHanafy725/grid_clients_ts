@@ -98,7 +98,11 @@ class GridClient {
         if (!isConnecting) {
             await tfclient.connect();
             this.rmbClient.api = tfclient.client.api;
-            await this.rmbClient.connect();
+            try {
+                await this.rmbClient.connect();
+            } catch (e) {
+                throw Error(e.message);
+            }
             if (BackendStorage.isEnvNode()) {
                 process.on("SIGTERM", this.disconnectAndExit);
                 process.on("SIGINT", this.disconnectAndExit);

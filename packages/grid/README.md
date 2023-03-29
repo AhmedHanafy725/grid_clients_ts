@@ -17,11 +17,11 @@ grid3_client is a client used for deploying workloads (VMs, ZDBs, k8s, etc.) on 
 
 ## Installation
 
-> **Warning**: For **Qanet**, Please use @2.0.0-rc12 version
+> **Warning**: For **Qanet**, Please use @2.0.0 version
 
-> **Warning**: For **Testnet**, Please use @2.0.0-rc12 version
+> **Warning**: For **Testnet**, Please use @2.0.0 version
 
-> **Warning**: For **Mainnet**, Please use @v1.5.0 version
+> **Warning**: For **Mainnet**, Please use @1.5.0 version
 
 ### External package
 

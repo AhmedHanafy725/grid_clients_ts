@@ -91,6 +91,13 @@ class Zos {
         const nodeTwinId = await this.capacity.getNodeTwinId(options.nodeId);
         return await this.rmb.request([nodeTwinId], "zos.network.public_config_get", "");
     }
+
+    @expose
+    @validateInput
+    async getStoragePools(options: ZOSNodeModel) {
+        const nodeTwinId = await this.capacity.getNodeTwinId(options.nodeId);
+        return await this.rmb.request([nodeTwinId], "zos.storage.pools", "");
+    }
 }
 
 export { Zos as zos };
