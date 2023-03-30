@@ -3,7 +3,7 @@
 - Network environment: should select dev environment, qa, test or main.
 
     ```ts
-    import { NetworkEnv } from "grid3_client";
+    import { NetworkEnv } from "@threefold/grid";
 
     const network = NetworkEnv.dev
     ```
@@ -43,7 +43,7 @@
     **Note:** selecting `auto` will auto detect the process if it's node it will use `fs` and if it's browser it will use `localstorage`.
 
 ```ts
-import { BackendStorageType } from "grid3_client";
+import { BackendStorageType } from "@threefold/grid";
 
 const backendStorageType = BackendStorageType.auto
 ```
@@ -51,7 +51,7 @@ const backendStorageType = BackendStorageType.auto
 - keypair type: the keypair types supported are `sr25519` or `ed25519`. (**default:** `sr25519`)
 
 ```ts
-import { KeypairType } from "grid3_client";
+import { KeypairType } from "@threefold/grid";
 
 const keypairType = KeypairType.sr25519
 ```
@@ -61,7 +61,7 @@ const keypairType = KeypairType.sr25519
 By gathering all the previous configuration in one script.
 
 ```ts
-import { GridClient } from "grid3_client";
+import { GridClient } from "@threefold/grid";
 
 
 const gridClient = new GridClient({ mnemonic: "<please insert your mnemonics here>", network: "dev, qa, test, main, or custom" });

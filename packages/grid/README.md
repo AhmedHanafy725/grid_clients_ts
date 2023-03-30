@@ -26,13 +26,7 @@ grid3_client is a client used for deploying workloads (VMs, ZDBs, k8s, etc.) on 
 ### External package
 
 ```bash
-npm install grid3_client
-```
-
-or
-
-```bash
-yarn add grid3_client
+yarn add @threefold/grid
 ```
 
 ### Local usage
@@ -44,12 +38,6 @@ git clone https://github.com/threefoldtech/grid3_client_ts.git
 ```
 
 - Install it
-
-```bash
-npm install
-```
-
-or
 
 ```bash
 yarn install
