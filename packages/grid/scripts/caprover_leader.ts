@@ -49,7 +49,7 @@ async function main() {
     vms.name = "newVMS5";
     vms.network = n;
     vms.machines = [vm];
-    vms.metadata = "{'testVMs': true}";
+    vms.metadata = "";
     vms.description = "caprover leader machine/node";
 
     // deploy vms

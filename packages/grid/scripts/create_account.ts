@@ -1,4 +1,5 @@
 import { env } from "process";
+import { default as urlParser } from "url-parse";
 
 import { GridClient } from "../src";
 import { NetworkEnv } from "../src/config";
@@ -18,7 +19,7 @@ async function main() {
     client._connect();
 
     const urls = client.getDefaultUrls(network);
-    const relay = urls.relay.slice(6);
+    const relay = urlParser(urls.relay).hostname;
 
     const createdAccount = await client.tfchain.createAccount(relay);
     log(createdAccount);

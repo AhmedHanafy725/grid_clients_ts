@@ -35,7 +35,7 @@ const vms = new MachinesModel();
 vms.name = "newVMS";
 vms.network = n;
 vms.machines = [vm];
-vms.metadata = "{'testVMs': true}";
+vms.metadata = "";
 vms.description = "test deploying VMs via ts grid3 client";
 
 async function main() {

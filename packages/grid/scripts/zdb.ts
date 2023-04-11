@@ -25,7 +25,7 @@ async function main() {
     const zdbs = new ZDBSModel();
     zdbs.name = "tttzdbs";
     zdbs.zdbs = [zdb];
-    zdbs.metadata = '{"test": "test"}';
+    zdbs.metadata = "";
 
     // deploy zdb
     const res = await grid3.zdbs.deploy(zdbs);

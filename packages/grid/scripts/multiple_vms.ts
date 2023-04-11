@@ -67,7 +67,7 @@ async function main() {
     vms.name = "monVMS";
     vms.network = n;
     vms.machines = [vm1, vm2];
-    vms.metadata = "{'testVMs': true}";
+    vms.metadata = "";
     vms.description = "test deploying VMs via ts grid3 client";
 
     // deploy vms

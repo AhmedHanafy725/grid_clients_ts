@@ -56,7 +56,7 @@ async function main() {
     k.network = n;
     k.masters = [master];
     k.workers = [worker];
-    k.metadata = "{'testk8s': true}";
+    k.metadata = "";
     k.description = "test deploying k8s via ts grid3 client";
     k.ssh_key = config.ssh_key;
 

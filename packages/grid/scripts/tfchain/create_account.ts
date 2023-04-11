@@ -1,18 +1,11 @@
-import { env } from "process";
+import { default as urlParser } from "url-parse";
 
-import { NetworkEnv } from "../../src/config";
-import config from ".././config.json";
 import { getClient } from "../client_loader";
 
 async function main() {
-    let network;
-    if (env.NETWORK) {
-        network = env.NETWORK as NetworkEnv;
-    } else {
-        network = config.network as NetworkEnv;
-    }
     const grid3 = await getClient();
-    const relay = grid3.getDefaultUrls(network).relay.slice(6);
+    const urls = grid3.getDefaultUrls(grid3.clientOptions.network);
+    const relay = urlParser(urls.relay).hostname;
     const res = await grid3.tfchain.create({
         relay: relay,
         name: "newacc",

@@ -85,7 +85,7 @@ async function main() {
                 },
             },
         ],
-        metadata: "{'testVMs': true}",
+        metadata: "",
         description: "test deploying VMs via ts grid3 client",
     };
 
