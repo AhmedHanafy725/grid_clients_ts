@@ -21,7 +21,7 @@ grid3_client is a client used for deploying workloads (VMs, ZDBs, k8s, etc.) on 
 
 > **Warning**: For **Testnet**, Please use @2.0.0 version
 
-> **Warning**: For **Mainnet**, Please use @1.5.0 version
+> **Warning**: For **Mainnet**, Please use @2.0.0 version
 
 ### External package
 
@@ -183,7 +183,7 @@ gridClient.disconnect();
 
 - [Configure the editor/IDE](./docs/editor_config.md)
 - [Contribution Guide](./docs/contribution.md)
-- [Grid Client documentation](https://library.threefold.me/info/manual/#/manual__grid3_javascript_home)
+- [Grid Client documentation](https://manual.grid.tf/javascript/grid3_javascript_readme.html)
 
 - [Pipelines documentation](./docs/workflows.md)
 - [Release process](./docs/release.md)
