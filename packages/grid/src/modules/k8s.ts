@@ -79,6 +79,11 @@ class K8sModule extends BaseModule {
 
         let deployments: TwinDeployment[] = [];
         let wireguardConfig = "";
+        const metadata = JSON.stringify({
+            type: "kubernetes",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
         const masters_names = [];
         const workers_names = [];
         for (const master of options.masters) {
@@ -99,7 +104,7 @@ class K8sModule extends BaseModule {
                 master.planetary,
                 network,
                 options.ssh_key,
-                options.metadata,
+                options.metadata || metadata,
                 options.description,
                 master.qsfs_disks,
                 this.config.projectName,
@@ -141,7 +146,7 @@ class K8sModule extends BaseModule {
                 worker.planetary,
                 network,
                 options.ssh_key,
-                options.metadata,
+                options.metadata || metadata,
                 options.description,
                 worker.qsfs_disks,
                 this.config.projectName,
@@ -171,7 +176,7 @@ class K8sModule extends BaseModule {
 
         const [deployments, , wireguardConfig] = await this._createDeployment(options);
         const contracts = await this.twinDeploymentHandler.handle(deployments);
-        await this.save(options.name, contracts, wireguardConfig);
+        await this.save(options.name, contracts);
         return { contracts: contracts, wireguard_config: wireguardConfig };
     }
 

@@ -33,6 +33,11 @@ class MachinesModule extends BaseModule {
 
         let twinDeployments: TwinDeployment[] = [];
         let wireguardConfig = "";
+        const metadata = JSON.stringify({
+            type: "vm",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
 
         const machines_names = [];
 
@@ -55,7 +60,7 @@ class MachinesModule extends BaseModule {
                 network,
                 machine.entrypoint,
                 machine.env,
-                options.metadata,
+                options.metadata || metadata,
                 options.description,
                 machine.qsfs_disks,
                 this.config.projectName,
@@ -83,7 +88,7 @@ class MachinesModule extends BaseModule {
 
         const [twinDeployments, , wireguardConfig] = await this._createDeployment(options);
         const contracts = await this.twinDeploymentHandler.handle(twinDeployments);
-        await this.save(options.name, contracts, wireguardConfig);
+        await this.save(options.name, contracts);
         return { contracts: contracts, wireguard_config: wireguardConfig };
     }
 

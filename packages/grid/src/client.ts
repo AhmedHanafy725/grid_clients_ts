@@ -1,8 +1,10 @@
-import * as PATH from "path";
 import { Client as RMBClient } from "@threefold/rmb";
+import * as PATH from "path";
+import urlJoin from "url-join";
 
 import { TFClient } from "./clients/tf-grid/client";
 import { ClientOptions, GridClientConfig, NetworkEnv } from "./config";
+import { send } from "./helpers";
 import { isExposed } from "./helpers/expose";
 import { generateString } from "./helpers/utils";
 import * as modules from "./modules/index";
@@ -36,6 +38,7 @@ class GridClient {
     utility: modules.utility;
     farmerbot: modules.farmerbot;
     farms: modules.farms;
+    networks: modules.networks;
     modules: string[] = [];
 
     constructor(public clientOptions?: ClientOptions) {
@@ -50,7 +53,7 @@ class GridClient {
                 : BackendStorageType.auto,
             deploymentTimeoutMinutes: clientOptions.deploymentTimeoutMinutes
                 ? clientOptions.deploymentTimeoutMinutes
-                : 5,
+                : 10,
         };
         if (
             !(
@@ -103,6 +106,9 @@ class GridClient {
             } catch (e) {
                 throw Error(e.message);
             }
+
+            await this.testConnectionUrls(urls);
+
             if (BackendStorage.isEnvNode()) {
                 process.on("SIGTERM", this.disconnectAndExit);
                 process.on("SIGINT", this.disconnectAndExit);
@@ -156,6 +162,22 @@ class GridClient {
             }
             this[module] = new modules[module](GridClient.config);
             this.modules.push(module);
+        }
+    }
+
+    async testConnectionUrls(urls: Record<string, string>): Promise<void> {
+        try {
+            await send("get", urlJoin(urls.rmbProxy, "version"), "", {});
+        } catch (err) {
+            console.log(err.message);
+            throw Error("failed to connect to Grid proxy server");
+        }
+
+        try {
+            await send("get", urls.graphql, "", {});
+        } catch (err) {
+            console.log(err.message);
+            throw Error("failed to connect to Graphql server");
         }
     }
 

@@ -123,7 +123,14 @@ class Contracts {
         return await this.tfclient.queryChain(this.tfclient.client.getServiceContract, [serviceContractId]);
     }
     async get(id: number) {
-        return await this.tfclient.queryChain(this.tfclient.client.getContractByID, [id]);
+        return this.tfclient
+            .queryChain(this.tfclient.client.getContractByID, [id])
+            .then(res => {
+                return res;
+            })
+            .catch(err => {
+                throw Error(`Error getting contract ${id}: ${err}`);
+            });
     }
 
     async getContractIdByNodeIdAndHash(nodeId: number, hash: string) {
@@ -142,36 +149,41 @@ class Contracts {
         const state = `[${stateList.join(", ")}]`;
         const gqlClient = new Graphql(graphqlURL);
         const options = `(where: {twinID_eq: ${twinId}, state_in: ${state}}, orderBy: twinID_ASC)`;
-        const nameContractsCount = await gqlClient.getItemTotalCount("nameContracts", options);
-        const nodeContractsCount = await gqlClient.getItemTotalCount("nodeContracts", options);
-        const rentContractsCount = await gqlClient.getItemTotalCount("rentContracts", options);
-        const body = `query getContracts($nameContractsCount: Int!, $nodeContractsCount: Int!, $rentContractsCount: Int!){
-            nameContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $nameContractsCount) {
-              contractID
-              state
-              name
-              createdAt
-            }
-            nodeContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $nodeContractsCount) {
-              contractID
-              deploymentData
-              state
-              createdAt
-              nodeID
-            }
-            rentContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $rentContractsCount) {
-              contractID
-              state
-              createdAt
-              nodeID
-            }
-          }`;
-        const response = await gqlClient.query(body, {
-            nodeContractsCount: nodeContractsCount,
-            nameContractsCount: nameContractsCount,
-            rentContractsCount: rentContractsCount,
-        });
-        return response["data"];
+        try {
+            const nameContractsCount = await gqlClient.getItemTotalCount("nameContracts", options);
+            const nodeContractsCount = await gqlClient.getItemTotalCount("nodeContracts", options);
+            const rentContractsCount = await gqlClient.getItemTotalCount("rentContracts", options);
+            const body = `query getContracts($nameContractsCount: Int!, $nodeContractsCount: Int!, $rentContractsCount: Int!){
+                nameContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $nameContractsCount) {
+                  contractID
+                  state
+                  name
+                  createdAt
+                }
+                nodeContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $nodeContractsCount) {
+                  contractID
+                  deploymentData
+                  state
+                  createdAt
+                  nodeID
+                }
+                rentContracts(where: {twinID_eq: ${twinId}, state_in: ${state}}, limit: $rentContractsCount) {
+                  contractID
+                  state
+                  createdAt
+                  nodeID
+                }
+              }`;
+            const response = await gqlClient.query(body, {
+                nodeContractsCount: nodeContractsCount,
+                nameContractsCount: nameContractsCount,
+                rentContractsCount: rentContractsCount,
+            });
+
+            return response["data"];
+        } catch (err) {
+            throw Error(`Error listing contracts by twin id ${twinId}: ${err}`);
+        }
     }
     /**
      * Get contract consumption per hour in TFT.
@@ -197,35 +209,39 @@ class Contracts {
                 createdAt
               }
           }`;
-        const response = await gqlClient.query(body, { contractId: id });
-        const billReports = response["data"]["contractBillReports"];
-        if (billReports.length === 0) {
-            return 0;
-        } else {
-            let duration: number;
-            const amountBilled = new Decimal(billReports[0]["amountBilled"]);
-            if (billReports.length === 2) {
-                duration = (billReports[0]["timestamp"] - billReports[1]["timestamp"]) / 3600; // one hour
+        try {
+            const response = await gqlClient.query(body, { contractId: id });
+            const billReports = response["data"]["contractBillReports"];
+            if (billReports.length === 0) {
+                return 0;
             } else {
-                const nodeContracts = response["data"]["nodeContracts"];
-                const nameContracts = response["data"]["nameContracts"];
-                const rentContracts = response["data"]["rentContracts"];
-                let createdAt: number;
-                for (const contracts of [nodeContracts, nameContracts, rentContracts]) {
-                    if (contracts.length === 1) {
-                        createdAt = contracts[0]["createdAt"];
+                let duration: number;
+                const amountBilled = new Decimal(billReports[0]["amountBilled"]);
+                if (billReports.length === 2) {
+                    duration = (billReports[0]["timestamp"] - billReports[1]["timestamp"]) / 3600; // one hour
+                } else {
+                    const nodeContracts = response["data"]["nodeContracts"];
+                    const nameContracts = response["data"]["nameContracts"];
+                    const rentContracts = response["data"]["rentContracts"];
+                    let createdAt: number;
+                    for (const contracts of [nodeContracts, nameContracts, rentContracts]) {
+                        if (contracts.length === 1) {
+                            createdAt = contracts[0]["createdAt"];
+                        }
+                        duration = (billReports[0]["timestamp"] - createdAt) / 3600;
+                        break;
                     }
-                    duration = (billReports[0]["timestamp"] - createdAt) / 3600;
-                    break;
                 }
+                if (!duration) {
+                    duration = 1;
+                }
+                return amountBilled
+                    .div(duration)
+                    .div(10 ** 7)
+                    .toNumber();
             }
-            if (!duration) {
-                duration = 1;
-            }
-            return amountBilled
-                .div(duration)
-                .div(10 ** 7)
-                .toNumber();
+        } catch (err) {
+            throw Error(`Error getting consumption for contract ${id}: ${err}`);
         }
     }
 
@@ -274,12 +290,19 @@ class Contracts {
 
         const blockNumber = contract.state["gracePeriod"];
 
-        const currentBlockNumber = +(await this.tfclient.queryChain(this.tfclient.client.api.query.system.number, []));
+        try {
+            const currentBlockNumber = +(await this.tfclient.queryChain(
+                this.tfclient.client.api.query.system.number,
+                [],
+            ));
 
-        // each block takes 6 seconds
-        const gracePeriodStartTime = new Date().getTime() - (currentBlockNumber - blockNumber) * 6000;
+            // each block takes 6 seconds
+            const gracePeriodStartTime = new Date().getTime() - (currentBlockNumber - blockNumber) * 6000;
 
-        return gracePeriodStartTime + TWO_WEEKS;
+            return gracePeriodStartTime + TWO_WEEKS;
+        } catch (err) {
+            throw Error(`Error getting current block number for contract ${contractId} deletion: ${err}`);
+        }
     }
 }
 

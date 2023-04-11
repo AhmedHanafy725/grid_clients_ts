@@ -32,12 +32,17 @@ class GWModule extends BaseModule {
         if (await this.exists(options.name)) {
             throw Error(`Another gateway deployment with the same name ${options.name} already exists`);
         }
+        const metadata = JSON.stringify({
+            type: "gateway",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
         const twinDeployments = await this.gateway.create(
             options.name,
             options.node_id,
             options.tls_passthrough,
             options.backends,
-            options.metadata,
+            options.metadata || metadata,
             options.description,
             options.fqdn,
             options.solutionProviderID,
@@ -54,12 +59,17 @@ class GWModule extends BaseModule {
         if (await this.exists(options.name)) {
             throw Error(`Another gateway deployment with the same name ${options.name} already exists`);
         }
+        const metadata = JSON.stringify({
+            type: "gateway",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
         const twinDeployments = await this.gateway.create(
             options.name,
             options.node_id,
             options.tls_passthrough,
             options.backends,
-            options.metadata,
+            options.metadata || metadata,
             options.description,
             "",
             options.solutionProviderID,

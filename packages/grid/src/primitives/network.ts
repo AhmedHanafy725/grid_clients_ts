@@ -5,7 +5,8 @@ import * as PATH from "path";
 import { default as PrivateIp } from "private-ip";
 import { default as TweetNACL } from "tweetnacl";
 
-import { RMB } from "../clients";
+import { RMB } from "../clients/rmb/client";
+import { TFClient } from "../clients/tf-grid/client";
 import { GridClientConfig } from "../config";
 import { events } from "../helpers/events";
 import { getRandomNumber, randomChoice } from "../helpers/utils";
@@ -43,6 +44,7 @@ class Network {
     _endpoints: Record<string, string> = {};
     _accessNodes: number[] = [];
     rmb: RMB;
+    wireguardConfig: string;
 
     constructor(public name: string, public ipRange: string, public config: GridClientConfig) {
         if (Addr(ipRange).prefix !== 16) {
@@ -98,7 +100,8 @@ class Network {
         this.accessPoints.push(accessPoint);
         await this.generatePeers();
         this.updateNetworkDeployments();
-        return this.getWireguardConfig(accessPoint.subnet, keypair.privateKey, nodesWGPubkey, endpoint);
+        this.wireguardConfig = this.getWireguardConfig(accessPoint.subnet, keypair.privateKey, nodesWGPubkey, endpoint);
+        return this.wireguardConfig;
     }
 
     async addNode(node_id: number, metadata = "", description = "", subnet = ""): Promise<Workload> {
@@ -195,7 +198,16 @@ class Network {
         if (network["ip_range"] !== this.ipRange) {
             throw Error(`The same network name ${this.name} with a different ip range already exists`);
         }
+        const tfclient = new TFClient(
+            this.config.substrateURL,
+            this.config.mnemonic,
+            this.config.storeSecret,
+            this.config.keypairType,
+        );
+        await tfclient.connect();
         for (const node of network["nodes"]) {
+            const contract = await tfclient.contracts.get(node.contract_id);
+            if (contract === null) continue;
             const node_twin_id = await this.capacity.getNodeTwinId(node.node_id);
             const payload = JSON.stringify({ contract_id: node.contract_id });
             let res;
@@ -539,7 +551,12 @@ PersistentKeepalive = 25\nEndpoint = ${endpoint}`;
             network = {
                 ip_range: this.ipRange,
                 nodes: [],
+                wireguardConfigs: [],
             };
+        }
+
+        if (this.wireguardConfig && !network.wireguardConfigs.includes(this.wireguardConfig)) {
+            network.wireguardConfigs.push(this.wireguardConfig);
         }
 
         if (this.nodes.length === 0) {

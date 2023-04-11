@@ -140,6 +140,11 @@ class VMHL extends HighLevelBase {
             accessNodeSubnet = network.getFreeSubnet();
         }
         // network
+        const networkMetadata = JSON.stringify({
+            type: "network",
+            name: network.name,
+            projectName: this.config.projectName,
+        });
         const deploymentFactory = new DeploymentFactory(this.config);
         let access_net_workload;
         let wgConfig = "";
@@ -163,10 +168,10 @@ class VMHL extends HighLevelBase {
                 }
             }
             const access_node_id = Number(randomChoice(filteredAccessNodes));
-            access_net_workload = await network.addNode(access_node_id, metadata, description, accessNodeSubnet);
+            access_net_workload = await network.addNode(access_node_id, networkMetadata, description, accessNodeSubnet);
             wgConfig = await network.addAccess(access_node_id, true);
         }
-        const znet_workload = await network.addNode(nodeId, metadata, description, userIPsubnet);
+        const znet_workload = await network.addNode(nodeId, networkMetadata, description, userIPsubnet);
         if ((await network.exists()) && (znet_workload || access_net_workload)) {
             // update network
             for (const deployment of network.deployments) {
@@ -184,7 +189,12 @@ class VMHL extends HighLevelBase {
                 }
                 deployments.push(new TwinDeployment(d, Operations.update, 0, 0, network));
             }
-            if (znet_workload) workloads.push(znet_workload);
+            if (znet_workload) {
+                const deployment = deploymentFactory.create([znet_workload], 0, networkMetadata, description, 0);
+                deployments.push(
+                    new TwinDeployment(deployment, Operations.deploy, 0, nodeId, network, solutionProviderID),
+                );
+            }
         } else if (znet_workload) {
             // node not exist on the network
             if (!access_net_workload && !hasAccessNode && addAccess) {
@@ -192,13 +202,14 @@ class VMHL extends HighLevelBase {
                 wgConfig = await network.addAccess(nodeId, true);
                 znet_workload["data"] = network.updateNetwork(znet_workload.data);
             }
-            workloads.push(znet_workload);
+            const deployment = deploymentFactory.create([znet_workload], 0, networkMetadata, description, 0);
+            deployments.push(new TwinDeployment(deployment, Operations.deploy, 0, nodeId, network, solutionProviderID));
         }
         if (access_net_workload) {
             // network is not exist, and the node provide is not an access node
             const accessNodeId = access_net_workload.data["node_id"];
             access_net_workload["data"] = network.updateNetwork(access_net_workload.data);
-            const deployment = deploymentFactory.create([access_net_workload], 1626394539, metadata, description, 0);
+            const deployment = deploymentFactory.create([access_net_workload], 0, networkMetadata, description, 0);
             deployments.push(
                 new TwinDeployment(deployment, Operations.deploy, 0, accessNodeId, network, solutionProviderID),
             );

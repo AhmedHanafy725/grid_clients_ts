@@ -1,5 +1,8 @@
 import { default as md5 } from "crypto-js/md5";
+import { default as urlParser } from "url-parse";
 import { inspect } from "util";
+
+import { getClient } from "./client_loader";
 
 const os = require("os");
 
@@ -43,4 +46,12 @@ async function RemoteRun(host, user) {
     return ssh;
 }
 
-export { log, generateHash, generateInt, splitIP, bytesToGB, RemoteRun };
+async function returnRelay() {
+    const client = await getClient();
+    const network = client.clientOptions.network;
+    const urls = client.getDefaultUrls(network);
+    const relay = urlParser(urls.relay).hostname;
+    return relay;
+}
+
+export { log, generateHash, generateInt, splitIP, bytesToGB, RemoteRun, returnRelay };

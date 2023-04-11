@@ -21,6 +21,11 @@ class ZdbsModule extends BaseModule {
     async _createDeployment(options: ZDBSModel): Promise<TwinDeployment[]> {
         const twinDeployments = [];
         const zdbs_names = [];
+        const metadata = JSON.stringify({
+            type: "zdb",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
         for (const instance of options.zdbs) {
             if (zdbs_names.includes(instance.name))
                 throw Error(`Another zdb with the same name ${instance.name} already exists`);
@@ -33,7 +38,7 @@ class ZdbsModule extends BaseModule {
                 instance.mode,
                 instance.password,
                 instance.publicNamespace,
-                options.metadata,
+                options.metadata || metadata,
                 options.description,
                 instance.solutionProviderID,
             );

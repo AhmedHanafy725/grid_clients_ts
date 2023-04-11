@@ -221,7 +221,7 @@ class GatewayFQDNGetModel extends BaseGetDeleteModel {}
 class GatewayFQDNDeleteModel extends BaseGetDeleteModel {}
 
 class BaseGatewayNameModel {
-    @Expose() @IsString() @IsNotEmpty() @IsAlphanumeric() name: string;
+    @Expose() @IsString() @IsNotEmpty() @IsAlphanumeric() @MaxLength(NameLength + 10) name: string;
 }
 
 class GatewayNameModel extends BaseGatewayNameModel {
@@ -451,7 +451,7 @@ class BlockchainAssetsModel extends BlockchainListResultModel {
 class BlockchainCreateModel {
     @Expose() @IsString() @IsNotEmpty() @IsAlphanumeric() @MaxLength(NameLength) name: string;
     @Expose() @Transform(({ value }) => blockchainType[value]) @IsEnum(blockchainType) blockchain_type: blockchainType;
-    @Expose() @IsIP() @IsOptional() ip?: string;
+    @Expose() @IsString() @IsOptional() relay?: string;
 }
 
 class BlockchainGetModel {
@@ -549,6 +549,7 @@ class FilterOptions {
     @Expose() @IsOptional() @IsBoolean() dedicated?: boolean;
     @Expose() @IsOptional() @IsInt() availableFor?: number;
     @Expose() @IsOptional() @IsInt() page?: number;
+    @Expose() @IsOptional() @IsInt() size?: number;
 }
 
 class CalculatorModel {
@@ -588,6 +589,10 @@ class FarmIdModel {
 
 class pingFarmModel {
     @Expose() @IsInt() @IsNotEmpty() @Min(1) farmId: number;
+}
+
+class NetworkGetModel {
+    @Expose() @IsString() @IsNotEmpty() @IsAlphanumeric() @MaxLength(NameLength) name: string;
 }
 
 export {
@@ -702,4 +707,5 @@ export {
     SetServiceContractFeesModel,
     SetServiceContractMetadataModel,
     GetServiceContractModel,
+    NetworkGetModel,
 };

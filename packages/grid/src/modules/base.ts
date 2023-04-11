@@ -56,7 +56,7 @@ class BaseModule {
         return contracts;
     }
 
-    async save(name: string, contracts: Record<string, unknown[]>, wgConfig = "") {
+    async save(name: string, contracts: Record<string, unknown[]>) {
         const contractsPath = PATH.join(this.getDeploymentPath(name), "contracts.json");
         const wireguardPath = PATH.join(this.getDeploymentPath(name), `${name}.conf`);
         const oldContracts = await this.getDeploymentContracts(name);
@@ -76,14 +76,11 @@ class BaseModule {
             const contractPath = PATH.join(this.config.storePath, "contracts", `${contract["contractId"]}.json`);
             await this.backendStorage.dump(contractPath, "");
         }
-        if (wgConfig) {
-            await this.backendStorage.dump(wireguardPath, wgConfig);
-        }
         if (StoreContracts.length !== 0) {
             await this.backendStorage.dump(contractsPath, StoreContracts);
         } else {
             await this.backendStorage.dump(contractsPath, "");
-            await this.backendStorage.dump(wireguardPath, "");
+            await this.backendStorage.dump(wireguardPath, ""); // left for cleaning up the old deployment after deletion
         }
     }
 
@@ -478,7 +475,9 @@ class BaseModule {
                 }
                 if (
                     oldDeployment.workloads.filter(
-                        workload => workload.type === WorkloadTypes.ip && workload.data["v4"],
+                        workload =>
+                            (workload.type === WorkloadTypes.ip && workload.data["v4"]) ||
+                            workload.type === WorkloadTypes.network,
                     ).length > 0
                 ) {
                     continue;
@@ -503,7 +502,7 @@ class BaseModule {
             const twinDeployments = await module.delete(deployment, [name]);
             const contracts = await this.twinDeploymentHandler.handle(twinDeployments);
             if (contracts["deleted"].length > 0 || contracts["updated"].length > 0) {
-                await this.save(deployment_name, contracts, "");
+                await this.save(deployment_name, contracts);
                 await this._get(deployment_name);
                 return contracts;
             }

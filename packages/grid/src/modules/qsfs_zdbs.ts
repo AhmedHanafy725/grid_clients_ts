@@ -25,11 +25,17 @@ class QSFSZdbsModule extends BaseModule {
         }
         const count = options.count + 4; // 4 zdbs for meta
         const twinDeployments = [];
+        const metadata = JSON.stringify({
+            type: "QSFS",
+            name: options.name,
+            projectName: this.config.projectName,
+        });
         for (let i = 1; i <= count; i++) {
             let mode = "seq";
             if (i > options.count) {
                 mode = "user";
             }
+
             const nodeId = options.node_ids[(i - 1) % options.node_ids.length];
             const twinDeployment = await this.zdb.create(
                 options.name + i,
@@ -38,7 +44,7 @@ class QSFSZdbsModule extends BaseModule {
                 mode as ZdbModes,
                 options.password,
                 true,
-                options.metadata,
+                options.metadata || metadata,
                 options.description,
                 options.solutionProviderID,
             );

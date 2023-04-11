@@ -1,5 +1,5 @@
 import { default as PrivateIp } from "private-ip";
-import { Client as RMBClient } from "@threefold/rmb";
+import { Client as RMBClient } from "rmb-sdk-ts";
 
 import { GridClient } from "../client";
 import { RMB } from "../clients";
@@ -86,11 +86,17 @@ class Nodes {
             twinID
             }
         }`;
-        const response = await this.gqlClient.query(body, { nodeId: node_id });
-        if (response["data"]["nodes"]["length"] === 0) {
-            throw Error(`Couldn't find a node with id: ${node_id}`);
-        }
-        return response["data"]["nodes"][0]["twinID"];
+        return this.gqlClient
+            .query(body, { nodeId: node_id })
+            .then(response => {
+                if (response["data"]["nodes"]["length"] === 0) {
+                    throw Error(`Couldn't find a node with id: ${node_id}`);
+                }
+                return response["data"]["nodes"][0]["twinID"];
+            })
+            .catch(err => {
+                throw Error(`Error getting node twin ID for ID ${node_id}: ${err}`);
+            });
     }
 
     async getAccessNodes(): Promise<Record<string, unknown>> {
@@ -118,10 +124,16 @@ class Nodes {
             GridClient.config.storeSecret,
             GridClient.config.keypairType,
         );
-        const contract = await tfclient.contracts.get(contractId);
-        if (!contract["contractType"]["nodeContract"])
-            throw Error(`Couldn't get node id for this contract ${contractId}. It's not a node contract`);
-        return contract["contractType"]["nodeContract"]["nodeId"];
+        return tfclient.contracts
+            .get(contractId)
+            .then(contract => {
+                if (!contract["contractType"]["nodeContract"])
+                    throw Error(`Couldn't get node id for this contract ${contractId}. It's not a node contract`);
+                return contract["contractType"]["nodeContract"]["nodeId"];
+            })
+            .catch(err => {
+                throw Error(`Error getting node ID from contract ID ${contractId}: ${err}`);
+            });
     }
 
     _g2b(GB: number): number {
@@ -138,13 +150,17 @@ class Nodes {
                 return res;
             })
             .catch(err => {
-                throw err;
+                throw Error(`Error listing farms with page ${page} and size ${pageSize}: ${err}`);
             });
     }
 
     async getAllFarms(url = ""): Promise<FarmInfo[]> {
-        const farmsCount = await this.gqlClient.getItemTotalCount("farms", "(orderBy: farmID_ASC)");
-        return await this.getFarms(1, farmsCount, url);
+        try {
+            const farmsCount = await this.gqlClient.getItemTotalCount("farms", "(orderBy: farmID_ASC)");
+            return await this.getFarms(1, farmsCount, url);
+        } catch (err) {
+            throw Error(`Error listing all farms: ${err}`);
+        }
     }
 
     async checkFarmHasFreePublicIps(farmId: number, farms: FarmInfo[] = null, url = ""): Promise<boolean> {
@@ -161,21 +177,34 @@ class Nodes {
         let r: string;
         if (url) r = url;
         else r = this.proxyURL;
-
-        const ret = await send("get", `${r}/nodes?page=${page}&size=${pageSize}`, "", {});
-        return ret;
+        return send("get", `${r}/nodes?page=${page}&size=${pageSize}`, "", {})
+            .then(ret => {
+                return ret;
+            })
+            .catch(err => {
+                throw Error(`Error listing nodes with page ${page} and size ${pageSize}: ${err}`);
+            });
     }
 
     async getAllNodes(url = ""): Promise<NodeInfo[]> {
-        const nodesCount = await this.gqlClient.getItemTotalCount("nodes", "(orderBy: nodeID_ASC)");
-        return await this.getNodes(1, nodesCount, url);
+        try {
+            const nodesCount = await this.gqlClient.getItemTotalCount("nodes", "(orderBy: nodeID_ASC)");
+            return await this.getNodes(1, nodesCount, url);
+        } catch (err) {
+            throw Error(`Error listing all nodes: ${err}`);
+        }
     }
 
     async getNodesByFarmId(farmId: number, url = ""): Promise<NodeInfo[]> {
-        const nodesCount = await this.gqlClient.getItemTotalCount(
-            "nodes",
-            `(where: {farmId_eq: ${farmId}}, orderBy: nodeID_ASC)`,
-        );
+        let nodesCount = 0;
+        try {
+            nodesCount = await this.gqlClient.getItemTotalCount(
+                "nodes",
+                `(where: {farmID_eq: ${farmId}}, orderBy: nodeID_ASC)`,
+            );
+        } catch (err) {
+            throw Error(`Error getting total nodes count: ${err}`);
+        }
         let r: string;
         if (url) r = url;
         else r = this.proxyURL;
@@ -186,7 +215,7 @@ class Nodes {
                 else throw new Error(`The farm with id ${farmId}: doesn't have any nodes`);
             })
             .catch(err => {
-                throw err;
+                throw Error(`Error getting nodes by farm ID ${farmId}: ${err}`);
             });
     }
 
@@ -195,8 +224,13 @@ class Nodes {
         if (url) r = url;
         else r = this.proxyURL;
 
-        const ret = await send("get", `${r}/nodes?node_id=${nodeId}`, "", {});
-        if (ret.length !== 0) return ret[0];
+        return send("get", `${r}/nodes?node_id=${nodeId}`, "", {})
+            .then(ret => {
+                if (ret.length !== 0) return ret[0];
+            })
+            .catch(err => {
+                throw Error(`Error getting node with ID ${nodeId}: ${err}`);
+            });
     }
 
     async getNodeFreeResources(nodeId: number, source: "proxy" | "zos" = "proxy", url = ""): Promise<NodeResources> {
@@ -258,9 +292,8 @@ class Nodes {
         }
         if (nodes.length) {
             nodes = nodes.filter(n => !(options.nodeExclude && options.nodeExclude?.includes(n.nodeId)));
-            return nodes;
         }
-        throw Error(`Couldn't find any node with options: ${JSON.stringify(options)}`);
+        return nodes;
     }
 
     /**
@@ -297,6 +330,7 @@ class Nodes {
             available_for: options.availableFor,
             status: "up",
             page: options.page,
+            size: options.size,
         };
         if (options.gateway) {
             params["ipv4"] = true;
@@ -321,12 +355,16 @@ class Nodes {
     }
 
     async nodeAvailableForTwinId(nodeId: number, twinId: number): Promise<boolean> {
-        const node = await send("GET", `${this.proxyURL}/nodes/${nodeId}`, "", {});
-
-        if (node.rentedByTwinId != twinId && (node.dedicated || node.rentContractId != 0)) {
-            return false;
-        }
-        return true;
+        return send("GET", `${this.proxyURL}/nodes/${nodeId}`, "", {})
+            .then(node => {
+                if (node.rentedByTwinId != twinId && (node.dedicated || node.rentContractId != 0)) {
+                    return false;
+                }
+                return true;
+            })
+            .catch(err => {
+                throw Error(`Error checking if node ${nodeId} is available for twin ${twinId}: ${err}`);
+            });
     }
 
     // TODO : add get node by its node ID like the one in modules

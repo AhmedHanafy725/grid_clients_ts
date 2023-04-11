@@ -192,53 +192,28 @@ class TwinDeploymentHandler {
 
     deployMerge(twinDeployments: TwinDeployment[]): TwinDeployment[] {
         const deploymentMap = {};
+        const deployments = [];
 
         for (const twinDeployment of twinDeployments) {
             if (twinDeployment.operation !== Operations.deploy) {
                 continue;
             }
-            if (
-                Object.keys(deploymentMap).includes(twinDeployment.nodeId.toString()) &&
-                twinDeployment.publicIps == 0
-            ) {
+            const network_workloads = twinDeployment.deployment.workloads.filter(
+                workload => workload.type === WorkloadTypes.network,
+            );
+            if (network_workloads.length > 0) {
+                deployments.push(twinDeployment);
+                continue;
+            }
+            if (Object.keys(deploymentMap).includes(twinDeployment.nodeId.toString())) {
                 deploymentMap[twinDeployment.nodeId].deployment.workloads = deploymentMap[
                     twinDeployment.nodeId
                 ].deployment.workloads.concat(twinDeployment.deployment.workloads);
-            } else if (twinDeployment.publicIps > 0) {
-                // if first deployment has a public ip --> split the network in a separate deployment
-                const network_workload = twinDeployment.deployment.workloads.filter(
-                    workload => workload.type === WorkloadTypes.network,
-                )[0];
-
-                if (network_workload) {
-                    twinDeployment.deployment.workloads.splice(
-                        twinDeployment.deployment.workloads.indexOf(network_workload),
-                        1,
-                    );
-                    const deployment = this.deploymentFactory.create(
-                        [network_workload],
-                        1626394539,
-                        network_workload.metadata,
-                        network_workload.description,
-                        0,
-                    );
-                    const twd = new TwinDeployment(
-                        deployment,
-                        Operations.deploy,
-                        0,
-                        twinDeployment.nodeId,
-                        twinDeployment.network,
-                    );
-                    deploymentMap[twd.nodeId] = twd;
-                }
-
-                deploymentMap["random" + twinDeployments.indexOf(twinDeployment).toString()] = twinDeployment;
             } else {
                 deploymentMap[twinDeployment.nodeId] = twinDeployment;
             }
         }
 
-        const deployments = [];
         for (const key of Object.keys(deploymentMap)) {
             deployments.push(deploymentMap[key]);
         }
@@ -321,6 +296,18 @@ class TwinDeploymentHandler {
         return deployments;
     }
 
+    mergeDelete(twinDeployments: TwinDeployment[]): TwinDeployment[] {
+        const finalDeployments: TwinDeployment[] = [];
+        const contractsList: number[] = [];
+        for (const twinDeployment of twinDeployments) {
+            if (!contractsList.includes(twinDeployment.deployment.contract_id)) {
+                contractsList.push(twinDeployment.deployment.contract_id);
+                finalDeployments.push(twinDeployment);
+            }
+        }
+        return finalDeployments;
+    }
+
     async merge(twinDeployments: TwinDeployment[]): Promise<TwinDeployment[]> {
         let deployments = [];
         deployments = deployments.concat(this.deployMerge(twinDeployments));
@@ -333,7 +320,7 @@ class TwinDeploymentHandler {
         deployments = deployments.concat(
             (await updatedDeployment).filter(d => !deletedContracts.includes(d.deployment.contract_id)),
         );
-        deployments = deployments.concat(deletedDeployments);
+        deployments = deployments.concat(this.mergeDelete(deletedDeployments));
         return deployments;
     }
 

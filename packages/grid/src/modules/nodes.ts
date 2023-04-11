@@ -55,7 +55,7 @@ class Nodes {
                 return res;
             })
             .catch(err => {
-                throw err;
+                throw Error(`Error getting rent for node ${options.nodeId}: ${err}`);
             });
     }
 
