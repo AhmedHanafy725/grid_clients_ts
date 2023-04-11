@@ -1,12 +1,11 @@
+import { Client as RMBClient } from "@threefold/rmb";
 import { default as PrivateIp } from "private-ip";
-import { Client as RMBClient } from "rmb-sdk-ts";
 
 import { GridClient } from "../client";
 import { RMB } from "../clients";
 import { Graphql } from "../clients/graphql/client";
 import { TFClient } from "../clients/tf-grid/client";
 import { send } from "../helpers/requests";
-import { FarmerBot } from "../high_level/farmerbot";
 import { FilterOptions } from "../modules/models";
 
 interface FarmInfo {
