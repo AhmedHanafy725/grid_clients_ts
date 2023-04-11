@@ -8402,10 +8402,10 @@ ts-rmb-client-base@1.0.0:
   resolved "https://registry.npmjs.org/ts-rmb-client-base/-/ts-rmb-client-base-1.0.0.tgz"
   integrity sha512-a4jHR1P1fJYVaL88SNrgt+xHNOyrgx/vgENx/xlMDNQ7R9WVUdCTrrxQ3smCvMhsiRa2YnasuGzoIvDAbyHiDg==
 
-ts-rmb-redis-client@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/ts-rmb-redis-client/-/ts-rmb-redis-client-1.0.0.tgz"
-  integrity sha512-w06lGkB9kafbabuN0jexbjLW0eqE3nTz4OVSb2k/K8ivedQCv9edZyBbjhyidnGmYL7KF/SN3DVZIcyD3FKzOA==
+ts-rmb-redis-client@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/ts-rmb-redis-client/-/ts-rmb-redis-client-1.1.2.tgz#1c0fab88d6b388f483cb788f9f73fa1c0ef9a7dd"
+  integrity sha512-6eFtOWAf+OshnmA89VU9DKx5OMO3GbMf8lbYH4+OUI1cGaaIjT1syXLb6+FE6vfV2rXFxj1dEtw4bxPPyhsjOQ==
   dependencies:
     "@types/node" "^16.4.10"
     redis "^4.3.1"
