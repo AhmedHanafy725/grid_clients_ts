@@ -212,7 +212,7 @@ test("TC1234 - QSFS: Deploy QSFS underneath a VM", async () => {
     log(res);
 
     //VM Contract Assertions
-    expect(res.contracts.created).toHaveLength(1);
+    expect(res.contracts.created).toHaveLength(2);
     expect(res.contracts.updated).toHaveLength(0);
     expect(res.contracts.deleted).toHaveLength(0);
 
@@ -290,7 +290,8 @@ test("TC1234 - QSFS: Deploy QSFS underneath a VM", async () => {
     }
 });
 
-test("TC1235 - QSFS: Deploy QSFS Underneath a Kubernetes Cluster", async () => {
+// Skipped until this issue is fixed: https://github.com/threefoldtech/tf-images/issues/133
+test.skip("TC1235 - QSFS: Deploy QSFS Underneath a Kubernetes Cluster (https://github.com/threefoldtech/tf-images/issues/133)", async () => {
     /**********************************************
      Test Suite: Grid3_Client_TS (Automated)
      Test Cases: TC1235 - QSFS: Deploy QSFS Underneath a Kubernetes Cluster
@@ -535,7 +536,7 @@ test("TC1235 - QSFS: Deploy QSFS Underneath a Kubernetes Cluster", async () => {
     log(res);
 
     //K8s Contracts Assertions
-    expect(res.contracts.created).toHaveLength(2);
+    expect(res.contracts.created).toHaveLength(4);
     expect(res.contracts.updated).toHaveLength(0);
     expect(res.contracts.deleted).toHaveLength(0);
 

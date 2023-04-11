@@ -23,7 +23,8 @@ beforeAll(async () => {
 //Private IP Regex
 const ipRegex = /(^127\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)/;
 
-test("TC1231 - Kubernetes: Deploy a Kubernetes Cluster", async () => {
+// Skipped until this issue is fixed: https://github.com/threefoldtech/tf-images/issues/133
+test.skip("TC1231 - Kubernetes: Deploy a Kubernetes Cluster (https://github.com/threefoldtech/tf-images/issues/133)", async () => {
     /**********************************************
      Test Suite: Grid3_Client_TS (Automated)
      Test Cases: TC1231 - Kubernetes: Deploy a Kubernetes Cluster
@@ -174,7 +175,7 @@ test("TC1231 - Kubernetes: Deploy a Kubernetes Cluster", async () => {
     log(res);
 
     //Contracts Assertions
-    expect(res.contracts.created).toHaveLength(2);
+    expect(res.contracts.created).toHaveLength(4);
     expect(res.contracts.updated).toHaveLength(0);
     expect(res.contracts.deleted).toHaveLength(0);
 
@@ -277,7 +278,8 @@ test("TC1231 - Kubernetes: Deploy a Kubernetes Cluster", async () => {
     }
 });
 
-test("TC1232 - Kubernetes: Add Worker", async () => {
+// Skipped until this issue is fixed: https://github.com/threefoldtech/tf-images/issues/133
+test.skip("TC1232 - Kubernetes: Add Worker (https://github.com/threefoldtech/tf-images/issues/133)", async () => {
     /**********************************************
      Test Suite: Grid3_Client_TS (Automated)
      Test Cases: TC1232 - Kubernetes: Add Worker
@@ -449,7 +451,7 @@ test("TC1232 - Kubernetes: Add Worker", async () => {
     log(res);
 
     //Contract Assertions
-    expect(res.contracts.created).toHaveLength(2);
+    expect(res.contracts.created).toHaveLength(4);
     expect(res.contracts.updated).toHaveLength(0);
     expect(res.contracts.deleted).toHaveLength(0);
 
@@ -689,7 +691,7 @@ test("TC1233 - Kubernetes: Delete Worker", async () => {
     log(res);
 
     //Contract Assertions
-    expect(res.contracts.created).toHaveLength(2);
+    expect(res.contracts.created).toHaveLength(4);
     expect(res.contracts.updated).toHaveLength(0);
     expect(res.contracts.deleted).toHaveLength(0);
 
@@ -703,7 +705,7 @@ test("TC1233 - Kubernetes: Delete Worker", async () => {
     //New Contract Assertions
     expect(newRes["created"]).toHaveLength(0);
     expect(newRes["updated"]).toHaveLength(0);
-    expect(newRes["deleted"]).toHaveLength(1);
+    expect(newRes["deleted"]).toHaveLength(2);
 
     const newResult = await gridClient.k8s.getObj(k8s.name);
     log(newResult);

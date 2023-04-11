@@ -7,9 +7,7 @@ import {
     TfchainWalletTransferModel,
 } from "../../src";
 import { getClient } from "../client_loader";
-import { log } from "../utils";
-
-const randomIpv6 = require("random-ipv6");
+import { log, returnRelay } from "../utils";
 
 jest.setTimeout(300000);
 
@@ -32,13 +30,13 @@ test("TC1261 - TFChain: Create Account", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
     const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create TFChain Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -68,13 +66,12 @@ test("TC1262 - TFChain: Import Account", async () => {
     //Test Data
     const accountName = "Test" + generateString(5);
     const newAccountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
-    const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -108,13 +105,13 @@ test("TC1263 - TFChain: Get Account", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
     const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -144,13 +141,12 @@ test("TC1264 - TFChain: Check if Account exists", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
-    const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -179,13 +175,13 @@ test("TC1265 - TFChain: List Accounts", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
     const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -215,13 +211,13 @@ test("TC1266 - TFChain: Get Account assets", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
     const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -255,13 +251,12 @@ test("TC1267 - TFChain: Get Account assets by address", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
-    const blockchainType = "tfchain";
+    const relay = await returnRelay();
 
     //Create Account
     const account: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account);
     log(res);
@@ -297,15 +292,14 @@ test("TC1268 - TFChain: Transfer TFTs", async () => {
 
     //Test Data
     const accountName = "Test" + generateString(5);
-    const accountIP = randomIpv6();
     const account2Name = "Test" + generateString(5);
-    const account2IP = randomIpv6();
+    const relay = await returnRelay();
     const amount = 0.01;
 
     //Create the first account
     const account1: TfchainCreateModel = {
         name: accountName,
-        ip: accountIP,
+        relay: relay,
     };
     const res = await gridClient.tfchain.create(account1);
     log(res);
@@ -317,7 +311,7 @@ test("TC1268 - TFChain: Transfer TFTs", async () => {
     //Create the first account
     const account2: TfchainCreateModel = {
         name: account2Name,
-        ip: account2IP,
+        relay: relay,
     };
     const NewRes = await gridClient.tfchain.create(account2);
     log(res);
