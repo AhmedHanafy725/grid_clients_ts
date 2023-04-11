@@ -5,7 +5,7 @@ Twin server is an [RMB](https://github.com/threefoldtech/go-rmb) server that exp
 ## Prerequisites
 
 - [Redis server](https://redis.io)
-- [RMB server](https://github.com/threefoldtech/go-rmb) should be installed and running
+- [rmb-peer](https://github.com/threefoldtech/rmb-rs) should be installed and running
 
 ## Configuration
 
@@ -44,25 +44,25 @@ yarn run rmb_server
 
 ## Usage
 
-This is an example of getting a twin.
-Put the following content in a file `test_twin.ts`
+This is an example of getting user's contracts.
+Put the following content in a file `test_contracts.ts`
 
 ```ts
 import { MessageBusClient } from "ts-rmb-redis-client"
 
 async function main() {
-    const myTwinId = 3
-    const cmd = "twinserver.twins.get"
-    const payload = JSON.stringify({ 'id': 1 })
+    const myTwinId = 26
+    const cmd = "twinserver.contracts.listContractsByTwinId"
+    const payload = JSON.stringify({ twinId: 26 })
     const rmb = new MessageBusClient();
-    const msg = rmb.prepare(cmd, [myTwinId], 0, 2);
-    const message = await rmb.send(msg, payload);
-    const result = await rmb.read(message)
+    const requestId = await rmb.send(cmd, payload, myTwinId, 1);
+    const result = await rmb.read(requestId, 1);
     console.log(result)
+    rmb.disconnect()
 }
 main()
 ```
 
-And then run this file by `yarn run ts-node test_twin.ts`
+And then run this file by `yarn run ts-node test_contracts.ts`
 
 see more examples in [modules](./module.md)

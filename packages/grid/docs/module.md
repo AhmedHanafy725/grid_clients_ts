@@ -13,11 +13,20 @@ Module should be:
 
 ### Twins
 
+  **Note:** Each network has its own relay. So, the relay would be
+    "wss://relay.${network}.grid.tf" in all networks except for main. It would be "wss://relay.grid.tf".
+
 - **Create**
 
     cmd: `twinserver.twins.create`
 
-    payload: `'{"ip": "<yggdrasil ip>"}'`
+    payload: `'{"relay": "<relay>"}'`
+
+- **Update**
+
+    cmd: `twinserver.twins.update`
+
+    payload: `'{"relay": "<relay>"}'`
 
 - **Get**
 
@@ -140,7 +149,6 @@ Module should be:
     cmd: `twinserver.contracts.getServiceContract`
 
     payload: `'{"serviceContractId": <service contract id>}'`
-
 
 ### ZOS
 
@@ -515,7 +523,7 @@ single master and multiple workers.
     {
         "name": "mywallet",
         "blockchain_type": "<stellar, algorand or tfchain>",
-        "ip": "<required for tfchain>" // optional
+        "relay": "<required for tfchain>" // optional
     }
     ```
 
@@ -1040,6 +1048,9 @@ single master and multiple workers.
 - **Create**
     It will create a new account on tfchain.
 
+    **Note:** Each network has its own relay. So, the relay would be
+    "wss://relay.${network}.grid.tf" in all networks except for main. It would be "wss://relay.grid.tf".
+
     cmd: `twinserver.tfchain.create`
 
     payload:
@@ -1047,7 +1058,7 @@ single master and multiple workers.
     ```json
     {
         "name": "mywallet",
-        "ip": "<IP>"
+        "relay": "<relay>"
     }
     ```
 
