@@ -29,6 +29,6 @@
         "**/node_modules/**",
         "**/dist/**",
         "**/docs/**",
-        "/packages/rmb/lib/types/lib/**"
+        "/packages/rmb_direct_client/lib/types/lib/**"
     ]
 }
