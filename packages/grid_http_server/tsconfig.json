@@ -12,7 +12,7 @@
         ],
         "declaration": true,
         "declarationMap": true,
-        "outDir": "./dist/node",
+        "outDir": "./dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "emitDecoratorMetadata": true,
