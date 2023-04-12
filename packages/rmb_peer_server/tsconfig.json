@@ -12,7 +12,7 @@
         ],
         "declaration": true,
         "declarationMap": true,
-        "outDir": "./dist/node",
+        "outDir": "./dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "emitDecoratorMetadata": true,
@@ -20,7 +20,6 @@
         "allowJs": true,
         "baseUrl": ".",
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
-
     },
     "include": [
         "src/**/*"
