@@ -31,8 +31,8 @@ jobs:
       run: yarn build
     - name: Publish
       run: |
-        yarn workspace @threefold/rmb publish 
-        yarn workspace @threefold/grid publish
+        yarn workspace @threefold/rmb_direct_client publish 
+        yarn workspace @threefold/grid_client publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

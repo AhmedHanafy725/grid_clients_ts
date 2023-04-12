@@ -43,7 +43,7 @@ jobs:
       - name: Install
         run: yarn
       - name: Run tests 
-        run: yarn workspace @threefold/grid test --runInBand --ci --coverage --colors
+        run: yarn workspace @threefold/grid_client test --runInBand --ci --coverage --colors
       - name: Cleanup
         continue-on-error: true
         run: yarn run ts-node --project tsconfig-node.json packages/grid/tests/global_teardown.ts
