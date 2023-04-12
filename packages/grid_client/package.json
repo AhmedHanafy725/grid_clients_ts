@@ -65,7 +65,6 @@
         "/dist"
     ],
     "bin": {
-        "httpserver": "./dist/node/server/http_server.js",
         "twinserver": "./dist/node/server/rmb_server.js"
     },
     "private": false,
@@ -76,7 +75,6 @@
         "es6-build": "tsc --build tsconfig-es6.json",
         "server": "echo Not found! Do you mean rmb_server or http_server?",
         "rmb_server": "ts-node --project tsconfig-node.json src/server/rmb_server.ts",
-        "http_server": "ts-node --project tsconfig-node.json src/server/http_server.ts",
         "generate-docs": "typedoc --tsconfig tsconfig-es6.json src/index.ts --out docs/api",
         "serve-docs": "http-server docs/api",
         "test": "jest"
