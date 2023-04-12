@@ -25,8 +25,12 @@
   "files": [
     "/dist"
   ],
+  "bin": {
+    "grid_http_server": "./dist/server/server.js"
+  },
   "private": false,
   "scripts": {
-    "build": "npm-run-all es6-build node-build"
+    "build": "tsc --build tsconfig.json",
+    "start": "ts-node --project tsconfig.json src/index.ts"
   }
 }
